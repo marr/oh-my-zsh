@@ -26,6 +26,9 @@ alias gcount='git shortlog -sn'
 compdef gcount=git
 alias gcp='git cherry-pick'
 compdef _git gcp=git-cherry-pick
+alias gd='git diff'
+compdef _git gd=git-diff
+alias gdc='git diff --cached'
 alias glg='git log --stat --max-count=5'
 compdef _git glg=git-log
 alias glgg='git log --graph --max-count=5'
@@ -54,12 +57,6 @@ function current_branch() {
   echo ${ref#refs/heads/}
 }
 
-function current_repository() {
-
-  ref=$(git symbolic-ref HEAD 2> /dev/null) || return
-  echo $(git remote -v | cut -d':' -f 2)
-}
-
 # these aliases take advantage of the previous function
 alias ggpull='git pull origin $(current_branch)'
 compdef ggpull=git
@@ -67,3 +64,15 @@ alias ggpush='git push origin $(current_branch)'
 compdef ggpush=git
 alias ggpnp='git pull origin $(current_branch) && git push origin $(current_branch)'
 compdef ggpnp=git
+
+# list remotes with repo URLs
+rv () {
+    local line
+    git remote -v | grep push | sed 's/(.*$//' |
+    while read line;
+    do
+        printf "%-15s %s\n" $line
+    done
+}
+
+alias gcan="git commit --amend -av"
